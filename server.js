@@ -287,12 +287,6 @@ app.get('/', (req, res) => {
   res.send(homepageHtml);
 });
 
-// Start the xmcp HTTP server in the background
-const xmcpServer = spawn('node', ['dist/http.js'], {
-  stdio: 'inherit',
-  env: process.env
-});
-
 // Proxy all /mcp requests to the xmcp server
 app.all('/mcp', createProxyMiddleware({
   target: 'http://localhost:3001',
@@ -303,19 +297,36 @@ app.all('/mcp', createProxyMiddleware({
   }
 }));
 
-// Start the Express server
+let xmcpServer;
+
+// Start the Express server first, then spawn xmcp
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✔ MCP Server running on http://0.0.0.0:${PORT}`);
+  console.log(`✔ Express server running on http://0.0.0.0:${PORT}`);
+  console.log(`✔ Homepage: http://0.0.0.0:${PORT}/`);
   console.log(`✔ MCP endpoint: http://0.0.0.0:${PORT}/mcp`);
+  
+  // Now start the xmcp HTTP server in the background
+  xmcpServer = spawn('node', ['dist/http.js'], {
+    stdio: 'pipe',
+    env: process.env
+  });
+  
+  xmcpServer.stdout.on('data', (data) => {
+    console.log(`[xmcp] ${data.toString().trim()}`);
+  });
+  
+  xmcpServer.stderr.on('data', (data) => {
+    console.error(`[xmcp] ${data.toString().trim()}`);
+  });
 });
 
 // Handle process termination
 process.on('SIGINT', () => {
-  xmcpServer.kill();
+  if (xmcpServer) xmcpServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  xmcpServer.kill();
+  if (xmcpServer) xmcpServer.kill();
   process.exit();
 });
