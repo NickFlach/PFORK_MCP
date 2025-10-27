@@ -1,12 +1,13 @@
 # xmcp MCP Server
 
-This project is a Model Context Protocol (MCP) server built with [xmcp](https://xmcp.dev/), featuring API key authentication and a beautiful UI interface.
+This project is a Model Context Protocol (MCP) server built with [xmcp](https://xmcp.dev/), featuring API key authentication and a beautiful minimalist homepage.
 
 ## Features
 
+- ✅ **Beautiful Homepage** - Clean, minimalist landing page at the root URL
 - ✅ **API Key Authentication** - Secure your MCP server with SESSION_SECRET
-- ✅ **Beautiful UI** - Minimalist homepage using MCP UI
 - ✅ **HTTP Transport** - Accessible over HTTP on port 5000
+- ✅ **MCP UI Integration** - Build interactive interfaces with MCP UI
 - ✅ **Auto-discovery** - Tools, prompts, and resources automatically registered
 
 ## Getting Started
@@ -28,7 +29,9 @@ npm run build
 npm start
 ```
 
-The server will start on `http://0.0.0.0:5000/mcp`
+The server will start on `http://0.0.0.0:5000` with:
+- Homepage at `/`
+- MCP endpoint at `/mcp`
 
 ## Authentication
 
@@ -37,8 +40,9 @@ This server uses API key authentication. All requests to the `/mcp` endpoint req
 ```bash
 curl -H "x-api-key: YOUR_SESSION_SECRET" \
      -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
      -X POST http://localhost:5000/mcp \
-     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
 ## Connecting to MCP Clients
@@ -61,16 +65,19 @@ Add this configuration to your MCP client (Claude Desktop, etc.):
 ## Project Structure
 
 ```
-src/
-├── middleware.ts          # API key authentication
-├── tools/
-│   ├── greet.ts          # Example greeting tool
-│   └── homepage.ts       # UI homepage with server info
-├── prompts/
-│   └── review-code.ts    # Code review prompt template
-└── resources/
-    └── (config)/
-        └── app.ts        # Application configuration
+├── server.js              # Express wrapper serving custom homepage
+├── src/
+│   ├── middleware.ts      # API key authentication middleware
+│   ├── tools/
+│   │   ├── greet.ts      # Example greeting tool
+│   │   └── homepage.ts   # UI homepage tool (MCP UI)
+│   ├── prompts/
+│   │   └── review-code.ts # Code review prompt template
+│   └── resources/
+│       └── (config)/
+│           └── app.ts    # Application configuration
+├── xmcp.config.ts        # xmcp configuration
+└── package.json
 ```
 
 ## Available Tools
@@ -83,6 +90,15 @@ Greet a user by name.
 
 ### homepage
 Display the MCP server homepage with endpoint information and available tools. Returns a beautiful, minimalist UI using MCP UI.
+
+## How It Works
+
+The project uses a two-tier architecture:
+
+1. **Express Server (Port 5000)** - Serves the custom homepage at `/` and proxies MCP requests
+2. **xmcp Server (Port 3001)** - Handles MCP protocol requests with authentication
+
+When you visit the root URL, you see the beautiful minimalist homepage. All requests to `/mcp` are proxied to the xmcp server, which handles the MCP protocol with API key authentication.
 
 ## Adding New Components
 
@@ -132,24 +148,6 @@ export default function myPrompt({ topic }: InferSchema<typeof schema>) {
 }
 ```
 
-### Adding a Resource
-
-Create a new file in `src/resources/`:
-
-```typescript
-import { type ResourceMetadata } from "xmcp";
-
-export const metadata: ResourceMetadata = {
-  name: "my-resource",
-  title: "My Resource",
-  description: "What your resource provides",
-};
-
-export default function handler() {
-  return "Resource data here";
-}
-```
-
 ## Building for Production
 
 ```bash
@@ -160,12 +158,12 @@ This compiles TypeScript to the `dist/` directory.
 
 ## Configuration
 
-Server configuration is in `xmcp.config.ts`:
+### xmcp Configuration (`xmcp.config.ts`)
 
 ```typescript
 const config: XmcpConfig = {
   http: {
-    port: 5000,        // Port number
+    port: 3001,        // Internal xmcp server port
     host: "0.0.0.0",   // Bind to all interfaces
   },
   paths: {
@@ -175,6 +173,13 @@ const config: XmcpConfig = {
   }
 };
 ```
+
+### Server Configuration (`server.js`)
+
+The Express server wrapper:
+- Serves custom homepage at `/`
+- Proxies MCP requests to xmcp server on port 3001
+- Runs on port 5000 for external access
 
 ## Learn More
 

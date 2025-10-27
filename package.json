@@ -8,10 +8,13 @@
   "scripts": {
     "build": "xmcp build",
     "dev": "xmcp dev",
-    "start": "node dist/http.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@mcp-ui/server": "^5.13.1",
+    "@types/express": "^5.0.5",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "xmcp": "^0.3.5",
     "zod": "3.24.4"
   }

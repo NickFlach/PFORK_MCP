@@ -2,7 +2,7 @@ import { type XmcpConfig } from "xmcp";
 
 const config: XmcpConfig = {
   http: {
-    port: 5000,
+    port: 3001,
     host: "0.0.0.0",
   },
   paths: {

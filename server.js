@@ -1,11 +1,16 @@
-import { apiKeyAuthMiddleware, type Middleware } from "xmcp";
+const express = require('express');
+const {  spawn } = require('child_process');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const homepageHtml = () => {
-  const mcpUrl = process.env.REPLIT_DEV_DOMAIN 
-    ? `https://${process.env.REPLIT_DEV_DOMAIN}/mcp`
-    : "http://localhost:5000/mcp";
+const app = express();
+const PORT = 5000;
 
-  return `
+// Get MCP URL for the homepage
+const mcpUrl = process.env.REPLIT_DEV_DOMAIN 
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}/mcp`
+  : `http://localhost:${PORT}/mcp`;
+
+const homepageHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -274,49 +279,43 @@ const homepageHtml = () => {
     </script>
 </body>
 </html>
-  `;
-};
+`;
 
-// Custom middleware to serve homepage at root
-const serveHomepage: Middleware = async (req, res, next) => {
-  // Serve homepage HTML at root path
-  if (req.method === "GET" && req.url === "/") {
-    res.setHeader("Content-Type", "text/html");
-    res.statusCode = 200;
-    res.end(homepageHtml());
-    return;
+// Serve custom homepage at root
+app.get('/', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(homepageHtml);
+});
+
+// Start the xmcp HTTP server in the background
+const xmcpServer = spawn('node', ['dist/http.js'], {
+  stdio: 'inherit',
+  env: process.env
+});
+
+// Proxy all /mcp requests to the xmcp server
+app.all('/mcp', createProxyMiddleware({
+  target: 'http://localhost:3001',
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: {
+    '^/mcp': '/mcp'
   }
-  
-  // Continue to next middleware for other paths
-  await next();
-};
+}));
 
-// Combine middlewares: homepage first, then auth for /mcp endpoint
-const middleware: Middleware = async (req, res, next) => {
-  // Serve homepage HTML at root path
-  if (req.method === "GET" && req.url === "/") {
-    res.setHeader("Content-Type", "text/html");
-    res.statusCode = 200;
-    res.end(homepageHtml());
-    return;
-  }
-  
-  // Apply API key auth for all other paths
-  const authMiddleware = apiKeyAuthMiddleware({
-    headerName: "x-api-key",
-    validateApiKey: async (apiKey) => {
-      const sessionSecret = process.env.SESSION_SECRET;
-      
-      if (!sessionSecret) {
-        console.error("SESSION_SECRET environment variable is not set");
-        return false;
-      }
-      
-      return apiKey === sessionSecret;
-    },
-  });
-  
-  return authMiddleware(req, res, next);
-};
+// Start the Express server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✔ MCP Server running on http://0.0.0.0:${PORT}`);
+  console.log(`✔ MCP endpoint: http://0.0.0.0:${PORT}/mcp`);
+});
 
-export default middleware;
+// Handle process termination
+process.on('SIGINT', () => {
+  xmcpServer.kill();
+  process.exit();
+});
+
+process.on('SIGTERM', () => {
+  xmcpServer.kill();
+  process.exit();
+});
