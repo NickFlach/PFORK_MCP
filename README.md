@@ -1,42 +1,21 @@
 # xmcp MCP Server
 
-This project is a Model Context Protocol (MCP) server built with [xmcp](https://xmcp.dev/), featuring API key authentication and a beautiful minimalist homepage.
+A clean, production-ready Model Context Protocol (MCP) server built with [xmcp](https://xmcp.dev/), featuring a beautiful homepage, API key authentication, and comprehensive examples for LLM coding agents.
 
 ## Features
 
-- ✅ **Beautiful Homepage** - Clean, minimalist landing page at the root URL
+- ✅ **Beautiful Homepage** - Clean, minimalist landing page with copy-to-clipboard functionality
 - ✅ **API Key Authentication** - Secure your MCP server with SESSION_SECRET
-- ✅ **Express Integration** - Full control over routing and middleware
-- ✅ **HTTP Transport** - Accessible over HTTP on port 5000
-- ✅ **MCP UI Integration** - Build interactive interfaces with MCP UI
-- ✅ **Auto-discovery** - Tools, prompts, and resources automatically registered
+- ✅ **Express Integration** - Dual-server architecture with full routing control
+- ✅ **Comprehensive Examples** - Well-documented tools, prompts, and resources
+- ✅ **Auto-discovery** - Components automatically registered from file system
+- ✅ **LLM-Friendly** - Inline documentation and xmcp.dev links in every component
 
-## Architecture
-
-This project uses a clean architecture with Express as the main server:
-
-```
-┌─────────────────────────────────────┐
-│   Express Server (Port 5000)        │
-│   - Serves homepage at /            │
-│   - Proxies /mcp to xmcp server     │
-│   - Full routing control            │
-└──────────────┬──────────────────────┘
-               │ proxies /mcp
-               ▼
-┌─────────────────────────────────────┐
-│   xmcp Server (Port 3000)           │
-│   - Handles MCP protocol            │
-│   - API key authentication          │
-│   - Auto-discovers tools            │
-└─────────────────────────────────────┘
-```
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 - Node.js 20+
-- SESSION_SECRET environment variable (already configured in Replit)
+- SESSION_SECRET environment variable
 
 ### Running the Server
 
@@ -54,17 +33,53 @@ npm start
 The server will start on `http://0.0.0.0:5000` with:
 - Homepage at `/`
 - MCP endpoint at `/mcp`
+- API endpoints at `/api/tools`, `/api/prompts`, `/api/resources`
 
-## Authentication
+## Architecture
 
-This server uses API key authentication. All requests to the `/mcp` endpoint require the `x-api-key` header:
+```
+┌─────────────────────────────────────┐
+│   Express Server (Port 5000)        │
+│   - Serves homepage at /            │
+│   - Provides API endpoints          │
+│   - Proxies /mcp to xmcp server     │
+└──────────────┬──────────────────────┘
+               │ proxies /mcp
+               ▼
+┌─────────────────────────────────────┐
+│   xmcp Server (Port 3000)           │
+│   - Handles MCP protocol            │
+│   - API key authentication          │
+│   - Auto-discovers components       │
+└─────────────────────────────────────┘
+```
 
-```bash
-curl -H "x-api-key: YOUR_SESSION_SECRET" \
-     -H "Content-Type: application/json" \
-     -H "Accept: application/json" \
-     -X POST http://localhost:5000/mcp \
-     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+## Project Structure
+
+```
+├── server.js              # Express server (port 5000)
+├── public/
+│   ├── index.html        # Homepage HTML
+│   └── styles.css        # Separated CSS for easy customization
+├── src/
+│   ├── middleware.ts     # API key authentication
+│   ├── tools/
+│   │   ├── greet.ts              # Example greeting tool
+│   │   └── get-server-info.ts   # Server information tool
+│   ├── prompts/
+│   │   ├── review-code.ts        # Enhanced code review prompt
+│   │   ├── generate-docs.ts      # Documentation generation prompt
+│   │   └── debug-error.ts        # Error debugging prompt
+│   └── resources/
+│       ├── (config)/
+│       │   └── app.ts            # App config resource
+│       ├── (users)/
+│       │   └── [userId]/
+│       │       └── index.ts      # User profile resource
+│       └── (docs)/
+│           └── structure.ts      # Project structure resource
+├── xmcp.config.ts        # xmcp server configuration
+└── package.json          # Dependencies and scripts
 ```
 
 ## Connecting to MCP Clients
@@ -84,51 +99,18 @@ Add this configuration to your MCP client (Claude Desktop, etc.):
 }
 ```
 
-## Project Structure
-
-```
-├── server.js              # Express server (port 5000)
-├── public/
-│   └── index.html        # Homepage (served at /)
-├── src/
-│   ├── middleware.ts      # API key authentication
-│   ├── tools/
-│   │   ├── greet.ts      # Example greeting tool
-│   │   └── homepage.ts   # UI homepage tool (MCP UI)
-│   ├── prompts/
-│   │   └── review-code.ts # Code review prompt
-│   └── resources/
-│       └── (config)/
-│           └── app.ts    # Application configuration
-├── xmcp.config.ts        # xmcp configuration (port 3000)
-└── package.json
-```
-
-## Available Tools
-
-### greet
-Greet a user by name.
-
-**Parameters:**
-- `name` (string) - The name of the user to greet
-
-### homepage
-Display the MCP server homepage with endpoint information and available tools. Returns a beautiful, minimalist UI using MCP UI.
-
-## Customizing the Homepage
-
-The homepage is located at `public/index.html`. Edit this file to customize the design. The JavaScript automatically:
-- Detects the current domain
-- Generates the MCP endpoint URL
-- Updates the configuration example
-
 ## Adding New Components
+
+All components include comprehensive inline documentation and links to xmcp.dev docs.
 
 ### Adding a Tool
 
-Create a new file in `src/tools/`:
+Create a new file in `src/tools/your-tool.ts`:
 
 ```typescript
+/**
+ * Learn more: https://xmcp.dev/docs/core-concepts/tools
+ */
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
 
@@ -137,12 +119,66 @@ export const schema = {
 };
 
 export const metadata: ToolMetadata = {
-  name: "my-tool",
+  name: "your-tool",
   description: "What your tool does",
+  annotations: {
+    title: "Your Tool",
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+  },
 };
 
-export default function myTool({ input }: InferSchema<typeof schema>) {
+export default async function yourTool({ input }: InferSchema<typeof schema>) {
   return `Result: ${input}`;
+}
+```
+
+### Adding a Prompt
+
+Create a new file in `src/prompts/your-prompt.ts`:
+
+```typescript
+/**
+ * Learn more: https://xmcp.dev/docs/core-concepts/prompts
+ */
+import { z } from "zod";
+import { type InferSchema, type PromptMetadata } from "xmcp";
+
+export const schema = {
+  input: z.string().describe("Your input parameter"),
+};
+
+export const metadata: PromptMetadata = {
+  name: "your-prompt",
+  title: "Your Prompt",
+  description: "What your prompt does",
+  role: "user",
+};
+
+export default function yourPrompt({ input }: InferSchema<typeof schema>) {
+  return `Your prompt text here: ${input}`;
+}
+```
+
+### Adding a Resource
+
+Create a new file in `src/resources/(scheme)/path.ts`:
+
+```typescript
+/**
+ * Learn more: https://xmcp.dev/docs/core-concepts/resources
+ */
+import { type ResourceMetadata } from "xmcp";
+
+export const metadata: ResourceMetadata = {
+  name: "your-resource",
+  title: "Your Resource",
+  description: "What your resource provides",
+};
+
+export default function handler() {
+  return "Your resource data here";
 }
 ```
 
@@ -152,54 +188,40 @@ npm run build
 npm start
 ```
 
-### Adding Custom Routes
+## Authentication
 
-Edit `server.js` to add your own routes:
-
-```javascript
-// Add this before the /mcp proxy
-app.get('/your-route', (req, res) => {
-  res.json({ message: 'Your custom route' });
-});
-```
-
-## Configuration
-
-### Express Server (`server.js`)
-- Port: 5000 (public-facing)
-- Serves homepage from `public/index.html`
-- Proxies `/mcp` to xmcp server on port 3000
-
-### xmcp Configuration (`xmcp.config.ts`)
-```typescript
-const config: XmcpConfig = {
-  http: {
-    port: 3000,           // Internal xmcp server port
-    host: "0.0.0.0",
-    endpoint: "/mcp",
-  },
-  paths: {
-    tools: "./src/tools",
-    prompts: "./src/prompts",
-    resources: "./src/resources",
-  }
-};
-```
-
-## Building for Production
+All requests to `/mcp` require the `x-api-key` header:
 
 ```bash
-npm run build
+curl -H "x-api-key: YOUR_SESSION_SECRET" \
+     -H "Content-Type: application/json" \
+     -X POST http://localhost:5000/mcp \
+     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
-This compiles TypeScript to the `dist/` directory.
+## Customization
+
+### Homepage
+Edit `public/index.html` and `public/styles.css` to customize the landing page.
+
+### Custom Routes
+Edit `server.js` to add custom Express routes:
+
+```javascript
+// Add before the /mcp proxy
+app.get('/custom', (req, res) => {
+  res.json({ message: 'Custom route' });
+});
+```
 
 ## Learn More
 
 - [xmcp Documentation](https://xmcp.dev/docs)
 - [MCP Specification](https://modelcontextprotocol.io/)
-- [MCP UI Documentation](https://mcpui.dev/)
 - [xmcp Authentication Guide](https://xmcp.dev/docs/authentication/api-key)
+- [xmcp Tools Guide](https://xmcp.dev/docs/core-concepts/tools)
+- [xmcp Prompts Guide](https://xmcp.dev/docs/core-concepts/prompts)
+- [xmcp Resources Guide](https://xmcp.dev/docs/core-concepts/resources)
 
 ## License
 

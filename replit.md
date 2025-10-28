@@ -9,7 +9,7 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 - **Static HTML File**: Clean, minimalist design at `public/index.html`
 - **External CSS**: Styles separated into `public/styles.css` for easy customization
 - **Dynamic URL Generation**: JavaScript automatically detects domain and generates endpoint URL
-- **Copy-to-Clipboard**: Easy copying of MCP endpoint URL
+- **Copy-to-Clipboard**: Easy copying of MCP endpoint URL and configuration JSON
 - **Responsive Design**: Works on desktop and mobile devices
 - **Comprehensive Listings**: Shows all available tools, prompts, and resources with descriptions
 - **Documentation Links**: Direct links to xmcp docs for tools, prompts, and resources concepts
@@ -35,8 +35,8 @@ All tools include inline documentation with links to xmcp documentation.
 ## Recent Changes
 
 ### 2025-10-28: Simplified Project Structure
-- Removed unused middleware.ts file (now using Express for auth/routing)
 - Removed @mcp-ui/server dependency (not needed)
+- Simplified middleware.ts to only handle API key authentication
 - Simplified xmcp.config.ts to minimal necessary configuration
 - Cleaned up project to be a clean boilerplate template
 - Updated documentation to reflect simplified structure
@@ -85,6 +85,7 @@ All tools include inline documentation with links to xmcp documentation.
 │   ├── index.html        # Homepage HTML
 │   └── styles.css        # Homepage CSS
 ├── src/
+│   ├── middleware.ts     # API key authentication
 │   ├── tools/
 │   │   ├── greet.ts              # Example greeting tool
 │   │   └── get-server-info.ts   # Server information tool
