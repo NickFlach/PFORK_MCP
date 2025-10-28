@@ -1,9 +1,10 @@
 const express = require('express');
-const {  spawn } = require('child_process');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = 5000;
+const XMCP_PORT = 3000; // xmcp default port
 
 // Get MCP URL for the homepage
 const mcpUrl = process.env.REPLIT_DEV_DOMAIN 
@@ -281,52 +282,70 @@ const homepageHtml = `
 </html>
 `;
 
-// Serve custom homepage at root
-app.get('/', (req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.send(homepageHtml);
-});
-
-// Proxy all /mcp requests to the xmcp server
-app.all('/mcp', createProxyMiddleware({
-  target: 'http://localhost:3001',
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: {
-    '^/mcp': '/mcp'
-  }
-}));
-
 let xmcpServer;
 
-// Start the Express server first, then spawn xmcp
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✔ Express server running on http://0.0.0.0:${PORT}`);
-  console.log(`✔ Homepage: http://0.0.0.0:${PORT}/`);
-  console.log(`✔ MCP endpoint: http://0.0.0.0:${PORT}/mcp`);
-  
-  // Now start the xmcp HTTP server in the background
-  xmcpServer = spawn('node', ['dist/http.js'], {
-    stdio: 'pipe',
-    env: process.env
-  });
-  
-  xmcpServer.stdout.on('data', (data) => {
-    console.log(`[xmcp] ${data.toString().trim()}`);
-  });
-  
-  xmcpServer.stderr.on('data', (data) => {
-    console.error(`[xmcp] ${data.toString().trim()}`);
-  });
+// Start xmcp server first
+console.log('Starting xmcp server...');
+xmcpServer = spawn('node', ['dist/http.js'], {
+  stdio: 'pipe',
+  env: process.env
 });
+
+xmcpServer.stdout.on('data', (data) => {
+  console.log(`[xmcp] ${data.toString().trim()}`);
+});
+
+xmcpServer.stderr.on('data', (data) => {
+  console.error(`[xmcp Error] ${data.toString().trim()}`);
+});
+
+xmcpServer.on('error', (err) => {
+  console.error('Failed to start xmcp server:', err);
+  process.exit(1);
+});
+
+// Wait a bit for xmcp to start, then start Express
+setTimeout(() => {
+  // Serve custom homepage at root - this route is defined FIRST
+  app.get('/', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.send(homepageHtml);
+  });
+
+  // Proxy all /mcp requests to the xmcp server
+  app.use('/mcp', createProxyMiddleware({
+    target: `http://localhost:${XMCP_PORT}/mcp`,
+    changeOrigin: true,
+    ws: true,
+    logLevel: 'silent',
+    pathRewrite: {
+      '^/mcp': '', // Remove /mcp prefix when forwarding to target
+    },
+  }));
+
+  // Catch-all for any other routes
+  app.use((req, res) => {
+    res.status(404).send('Not Found');
+  });
+
+  // Start the Express server
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✔ Express server running on http://0.0.0.0:${PORT}`);
+    console.log(`✔ Homepage: http://0.0.0.0:${PORT}/`);
+    console.log(`✔ MCP endpoint: http://0.0.0.0:${PORT}/mcp`);
+  });
+}, 2000);
 
 // Handle process termination
 process.on('SIGINT', () => {
+  console.log('\nShutting down...');
   if (xmcpServer) xmcpServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
+  console.log('\nShutting down...');
   if (xmcpServer) xmcpServer.kill();
   process.exit();
 });
