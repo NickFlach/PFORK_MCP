@@ -7,10 +7,12 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 
 ### Beautiful Homepage
 - **Static HTML File**: Clean, minimalist design at `public/index.html`
+- **External CSS**: Styles separated into `public/styles.css` for easy customization
 - **Dynamic URL Generation**: JavaScript automatically detects domain and generates endpoint URL
 - **Copy-to-Clipboard**: Easy copying of MCP endpoint URL
 - **Responsive Design**: Works on desktop and mobile devices
 - **Comprehensive Listings**: Shows all available tools, prompts, and resources with descriptions
+- **Documentation Links**: Direct links to xmcp docs for tools, prompts, and resources concepts
 - **API Endpoints**: Provides `/api/tools`, `/api/prompts`, and `/api/resources` for dynamic loading
 
 ### Authentication
@@ -62,7 +64,8 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 ```
 ├── server.js              # Express server (port 5000)
 ├── public/
-│   └── index.html        # Homepage HTML
+│   ├── index.html        # Homepage HTML
+│   └── styles.css        # Homepage CSS
 ├── src/
 │   ├── middleware.ts      # API key authentication for MCP
 │   ├── tools/

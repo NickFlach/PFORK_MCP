@@ -10,9 +10,10 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 channel = "stable-24_11"
 
 [deployment]
-run = ["node", "index.js"]
-deploymentTarget = "autoscale"
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "gce"
 ignorePorts = false
+build = ["sh", "-c", "npm run build"]
 
 [agent]
 expertMode = true

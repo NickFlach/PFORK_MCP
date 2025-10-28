@@ -31,6 +31,9 @@ xmcpServer.on('error', (err) => {
 
 // Wait for xmcp to start
 setTimeout(() => {
+  // Serve static files from public directory
+  app.use(express.static(path.join(__dirname, 'public')));
+
   // Serve homepage at root
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
