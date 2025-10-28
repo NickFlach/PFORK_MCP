@@ -165,7 +165,7 @@ Add this to your MCP client configuration file:
 ```json
 {
   "mcpServers": {
-    "my-xmcp-app": {
+    "my-replit-mcp-server": {
       "url": "https://<your-replit-domain>/mcp",
       "headers": {
         "x-api-key": "<your-session-secret>"
