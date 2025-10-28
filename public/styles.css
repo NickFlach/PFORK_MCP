@@ -134,6 +134,15 @@ p {
     background: #10b981;
 }
 
+.config-json + .copy-btn {
+    top: 12px;
+    transform: none;
+}
+
+.config-json + .copy-btn:active {
+    transform: scale(0.95);
+}
+
 a { 
     color: #000; 
     text-decoration: none; 
