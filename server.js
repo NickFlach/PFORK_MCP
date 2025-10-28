@@ -39,37 +39,43 @@ setTimeout(() => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 
+  // Helper function to query the MCP server
+  async function queryMCP(method) {
+    const response = await fetch(`http://localhost:${XMCP_PORT}/mcp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'x-api-key': process.env.SESSION_SECRET || '',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: Date.now(),
+        method: method,
+        params: {}
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`MCP request failed: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  }
+
   // API endpoint to list available tools
   app.get('/api/tools', async (req, res) => {
     try {
-      const fs = require('fs').promises;
-      const toolsDir = path.join(__dirname, 'src', 'tools');
+      const mcpResponse = await queryMCP('tools/list');
       
-      const files = await fs.readdir(toolsDir);
-      const tsFiles = files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
-      
-      const tools = [];
-      
-      for (const file of tsFiles) {
-        try {
-          const toolPath = path.join(toolsDir, file);
-          const content = await fs.readFile(toolPath, 'utf8');
-          
-          // Extract tool name from filename
-          const toolName = file.replace(/\.(ts|js)$/, '');
-          
-          // Try to extract description from metadata
-          const descMatch = content.match(/description:\s*["']([^"']+)["']/);
-          const description = descMatch ? descMatch[1] : '';
-          
-          tools.push({
-            name: toolName,
-            description: description
-          });
-        } catch (err) {
-          console.error(`Error reading tool file ${file}:`, err);
-        }
+      if (mcpResponse.error) {
+        throw new Error(mcpResponse.error.message);
       }
+      
+      const tools = mcpResponse.result.tools.map(tool => ({
+        name: tool.name,
+        description: tool.description || ''
+      }));
       
       res.json(tools);
     } catch (error) {
@@ -81,34 +87,16 @@ setTimeout(() => {
   // API endpoint to list available prompts
   app.get('/api/prompts', async (req, res) => {
     try {
-      const fs = require('fs').promises;
-      const promptsDir = path.join(__dirname, 'src', 'prompts');
+      const mcpResponse = await queryMCP('prompts/list');
       
-      const files = await fs.readdir(promptsDir);
-      const tsFiles = files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
-      
-      const prompts = [];
-      
-      for (const file of tsFiles) {
-        try {
-          const promptPath = path.join(promptsDir, file);
-          const content = await fs.readFile(promptPath, 'utf8');
-          
-          // Extract metadata
-          const nameMatch = content.match(/name:\s*["']([^"']+)["']/);
-          const descMatch = content.match(/description:\s*["']([^"']+)["']/);
-          
-          const name = nameMatch ? nameMatch[1] : file.replace(/\.(ts|js)$/, '');
-          const description = descMatch ? descMatch[1] : '';
-          
-          prompts.push({
-            name: name,
-            description: description
-          });
-        } catch (err) {
-          console.error(`Error reading prompt file ${file}:`, err);
-        }
+      if (mcpResponse.error) {
+        throw new Error(mcpResponse.error.message);
       }
+      
+      const prompts = mcpResponse.result.prompts.map(prompt => ({
+        name: prompt.name,
+        description: prompt.description || ''
+      }));
       
       res.json(prompts);
     } catch (error) {
@@ -120,44 +108,16 @@ setTimeout(() => {
   // API endpoint to list available resources
   app.get('/api/resources', async (req, res) => {
     try {
-      const fs = require('fs').promises;
-      const resourcesDir = path.join(__dirname, 'src', 'resources');
+      const mcpResponse = await queryMCP('resources/list');
       
-      const resources = [];
-      
-      async function scanDir(dir) {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          
-          if (entry.isDirectory()) {
-            await scanDir(fullPath);
-          } else if ((entry.name === 'index.ts' || entry.name === 'index.js' || entry.name.endsWith('.ts') || entry.name.endsWith('.js')) && !entry.name.includes('.test.')) {
-            try {
-              const content = await fs.readFile(fullPath, 'utf8');
-              
-              // Extract metadata
-              const nameMatch = content.match(/name:\s*["']([^"']+)["']/);
-              const descMatch = content.match(/description:\s*["']([^"']+)["']/);
-              
-              if (nameMatch) {
-                const name = nameMatch[1];
-                const description = descMatch ? descMatch[1] : '';
-                
-                resources.push({
-                  name: name,
-                  description: description
-                });
-              }
-            } catch (err) {
-              console.error(`Error reading resource file ${fullPath}:`, err);
-            }
-          }
-        }
+      if (mcpResponse.error) {
+        throw new Error(mcpResponse.error.message);
       }
       
-      await scanDir(resourcesDir);
+      const resources = mcpResponse.result.resources.map(resource => ({
+        name: resource.name,
+        description: resource.description || ''
+      }));
       
       res.json(resources);
     } catch (error) {

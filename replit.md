@@ -34,6 +34,13 @@ All tools include inline documentation with links to xmcp documentation.
 
 ## Recent Changes
 
+### 2025-10-28: Optimized API Endpoints to Query MCP Server Directly
+- Refactored `/api/tools`, `/api/prompts`, and `/api/resources` to use MCP protocol
+- API endpoints now query the running xmcp server instead of manually scanning files
+- Uses MCP JSON-RPC methods: `tools/list`, `prompts/list`, `resources/list`
+- Cleaner implementation that leverages the MCP server's built-in capabilities
+- Authenticates internal requests using SESSION_SECRET
+
 ### 2025-10-28: Updated Branding & Documentation Links
 - Changed homepage title to "MCP on Replit" with inline Replit logo
 - Added Replit Docs link to documentation section
@@ -123,6 +130,8 @@ All tools include inline documentation with links to xmcp documentation.
 1. **Express Server (Port 5000)**:
    - Serves `public/index.html` at `/`
    - Provides API endpoints: `/api/tools`, `/api/prompts`, `/api/resources`
+     - These endpoints query the xmcp server using MCP protocol internally
+     - Uses JSON-RPC methods: `tools/list`, `prompts/list`, `resources/list`
    - Proxies all `/mcp` requests to xmcp server on port 3000
    - Public-facing server
 
@@ -131,6 +140,7 @@ All tools include inline documentation with links to xmcp documentation.
    - Handles MCP protocol requests
    - Enforces API key authentication
    - Auto-discovers tools, prompts, resources
+   - Responds to internal queries from Express API endpoints
 
 3. **Homepage (`public/index.html`)**:
    - Pure HTML/CSS/JavaScript
