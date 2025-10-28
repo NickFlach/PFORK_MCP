@@ -10,7 +10,8 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 - **Dynamic URL Generation**: JavaScript automatically detects domain and generates endpoint URL
 - **Copy-to-Clipboard**: Easy copying of MCP endpoint URL
 - **Responsive Design**: Works on desktop and mobile devices
-- **Tool Listing**: Shows all available tools with descriptions
+- **Comprehensive Listings**: Shows all available tools, prompts, and resources with descriptions
+- **API Endpoints**: Provides `/api/tools`, `/api/prompts`, and `/api/resources` for dynamic loading
 
 ### Authentication
 - **API Key Authentication**: Enabled using `SESSION_SECRET` environment variable
@@ -28,6 +29,13 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 - **Protocol**: HTTP transport
 
 ## Recent Changes
+
+### 2025-10-28: Enhanced Homepage with Prompts & Resources
+- Added prompts and resources listings to homepage
+- Created `/api/prompts` endpoint to dynamically load available prompts
+- Created `/api/resources` endpoint to recursively scan and list resources
+- Removed MCP UI links from documentation section
+- Homepage now displays complete server capabilities (tools, prompts, resources)
 
 ### 2025-10-28: Clean Architecture & Static HTML
 - Moved homepage HTML to separate file (`public/index.html`)
@@ -80,6 +88,7 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 
 1. **Express Server (Port 5000)**:
    - Serves `public/index.html` at `/`
+   - Provides API endpoints: `/api/tools`, `/api/prompts`, `/api/resources`
    - Proxies all `/mcp` requests to xmcp server on port 3000
    - Public-facing server
 
@@ -100,9 +109,11 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 ### From Web Browser
 Visit your Replit URL to see the beautiful homepage with:
 - MCP endpoint URL
-- Available tools
+- Available tools with descriptions
+- Available prompts with descriptions
+- Available resources with descriptions
 - Configuration examples
-- Documentation links
+- Documentation links (xmcp and MCP Spec)
 
 ### MCP Client Configuration
 Add this to your MCP client configuration file:

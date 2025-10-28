@@ -222,6 +222,16 @@
         <li style="color: #999;">Loading tools...</li>
     </ul>
     
+    <h2>Available Prompts</h2>
+    <ul class="tool-list" id="prompts-list">
+        <li style="color: #999;">Loading prompts...</li>
+    </ul>
+    
+    <h2>Available Resources</h2>
+    <ul class="tool-list" id="resources-list">
+        <li style="color: #999;">Loading resources...</li>
+    </ul>
+    
     <h2>Configuration</h2>
     <p>Add this server to your MCP client configuration:</p>
     <div class="endpoint-container">
@@ -232,7 +242,6 @@
     <div class="docs-links">
         <a href="https://xmcp.dev/docs" target="_blank">xmcp Docs</a>
         <a href="https://modelcontextprotocol.io/" target="_blank">MCP Spec</a>
-        <a href="https://mcpui.dev/" target="_blank">MCP UI</a>
     </div>
 
     <script>
@@ -281,8 +290,62 @@
             }
         }
         
-        // Load tools on page load
+        // Load available prompts dynamically
+        async function loadPrompts() {
+            try {
+                const response = await fetch('/api/prompts');
+                const prompts = await response.json();
+                
+                const promptsList = document.getElementById('prompts-list');
+                
+                if (prompts.length === 0) {
+                    promptsList.innerHTML = '<li style="color: #999;">No prompts available</li>';
+                    return;
+                }
+                
+                promptsList.innerHTML = prompts.map(prompt => `
+                    <li>
+                        <div class="tool-name">${prompt.name}</div>
+                        <div class="tool-desc">${prompt.description || 'No description available'}</div>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load prompts:', error);
+                document.getElementById('prompts-list').innerHTML = 
+                    '<li style="color: #999;">Failed to load prompts</li>';
+            }
+        }
+        
+        // Load available resources dynamically
+        async function loadResources() {
+            try {
+                const response = await fetch('/api/resources');
+                const resources = await response.json();
+                
+                const resourcesList = document.getElementById('resources-list');
+                
+                if (resources.length === 0) {
+                    resourcesList.innerHTML = '<li style="color: #999;">No resources available</li>';
+                    return;
+                }
+                
+                resourcesList.innerHTML = resources.map(resource => `
+                    <li>
+                        <div class="tool-name">${resource.name}</div>
+                        <div class="tool-desc">${resource.description || 'No description available'}</div>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load resources:', error);
+                document.getElementById('resources-list').innerHTML = 
+                    '<li style="color: #999;">Failed to load resources</li>';
+            }
+        }
+        
+        // Load all data on page load
         loadTools();
+        loadPrompts();
+        loadResources();
         
         function copyToClipboard(elementId, button) {
             const element = document.getElementById(elementId);

@@ -75,6 +75,94 @@ setTimeout(() => {
     }
   });
 
+  // API endpoint to list available prompts
+  app.get('/api/prompts', async (req, res) => {
+    try {
+      const fs = require('fs').promises;
+      const promptsDir = path.join(__dirname, 'src', 'prompts');
+      
+      const files = await fs.readdir(promptsDir);
+      const tsFiles = files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+      
+      const prompts = [];
+      
+      for (const file of tsFiles) {
+        try {
+          const promptPath = path.join(promptsDir, file);
+          const content = await fs.readFile(promptPath, 'utf8');
+          
+          // Extract metadata
+          const nameMatch = content.match(/name:\s*["']([^"']+)["']/);
+          const descMatch = content.match(/description:\s*["']([^"']+)["']/);
+          
+          const name = nameMatch ? nameMatch[1] : file.replace(/\.(ts|js)$/, '');
+          const description = descMatch ? descMatch[1] : '';
+          
+          prompts.push({
+            name: name,
+            description: description
+          });
+        } catch (err) {
+          console.error(`Error reading prompt file ${file}:`, err);
+        }
+      }
+      
+      res.json(prompts);
+    } catch (error) {
+      console.error('Error loading prompts:', error);
+      res.status(500).json({ error: 'Failed to load prompts' });
+    }
+  });
+
+  // API endpoint to list available resources
+  app.get('/api/resources', async (req, res) => {
+    try {
+      const fs = require('fs').promises;
+      const resourcesDir = path.join(__dirname, 'src', 'resources');
+      
+      const resources = [];
+      
+      async function scanDir(dir) {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          
+          if (entry.isDirectory()) {
+            await scanDir(fullPath);
+          } else if ((entry.name === 'index.ts' || entry.name === 'index.js' || entry.name.endsWith('.ts') || entry.name.endsWith('.js')) && !entry.name.includes('.test.')) {
+            try {
+              const content = await fs.readFile(fullPath, 'utf8');
+              
+              // Extract metadata
+              const nameMatch = content.match(/name:\s*["']([^"']+)["']/);
+              const descMatch = content.match(/description:\s*["']([^"']+)["']/);
+              
+              if (nameMatch) {
+                const name = nameMatch[1];
+                const description = descMatch ? descMatch[1] : '';
+                
+                resources.push({
+                  name: name,
+                  description: description
+                });
+              }
+            } catch (err) {
+              console.error(`Error reading resource file ${fullPath}:`, err);
+            }
+          }
+        }
+      }
+      
+      await scanDir(resourcesDir);
+      
+      res.json(resources);
+    } catch (error) {
+      console.error('Error loading resources:', error);
+      res.status(500).json({ error: 'Failed to load resources' });
+    }
+  });
+
   // Proxy all /mcp requests to xmcp server
   app.use('/mcp', createProxyMiddleware({
     target: `http://localhost:${XMCP_PORT}/mcp`,
