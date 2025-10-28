@@ -34,6 +34,11 @@ All tools include inline documentation with links to xmcp documentation.
 
 ## Recent Changes
 
+### 2025-10-28: Updated Branding & Documentation Links
+- Changed homepage title to "MCP on Replit" with inline Replit logo
+- Added Replit Docs link to documentation section
+- Enhanced visual branding with logo integration
+
 ### 2025-10-28: Simplified Project Structure
 - Removed @mcp-ui/server dependency (not needed)
 - Simplified middleware.ts to only handle API key authentication

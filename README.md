@@ -1,4 +1,4 @@
-# xmcp MCP Server
+# MCP on Replit
 
 A clean, production-ready Model Context Protocol (MCP) server built with [xmcp](https://xmcp.dev/), featuring a beautiful homepage, API key authentication, and comprehensive examples for LLM coding agents.
 
@@ -218,6 +218,7 @@ app.get('/custom', (req, res) => {
 
 - [xmcp Documentation](https://xmcp.dev/docs)
 - [MCP Specification](https://modelcontextprotocol.io/)
+- [Replit Documentation](https://docs.replit.com)
 - [xmcp Authentication Guide](https://xmcp.dev/docs/authentication/api-key)
 - [xmcp Tools Guide](https://xmcp.dev/docs/core-concepts/tools)
 - [xmcp Prompts Guide](https://xmcp.dev/docs/core-concepts/prompts)
