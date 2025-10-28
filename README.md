@@ -6,8 +6,8 @@ A Model Context Protocol (MCP) server built with xmcp, featuring a beautiful hom
 
 1. **Click Run** - Start the server
 2. **Prompt Agent for Functionality** - Ask the AI agent to add tools, prompts, or resources
-3. **Test Changes** - View your changes on the homepage
-4. **Click Deploy** - Publish your server to production
+3. **Test Changes** - View your changes on the homepage, use a tool like the [MCP inspector](https://modelcontextprotocol.io/docs/tools/inspector) to test changes
+4. **Click Deploy** - Publish your server to production. Settings will be pre-configured
 
 That's it! Your MCP server is ready to use.
 
