@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "xmcp build",
-    "dev": "npm run build && node server.js",
+    "dev": "xmcp build && node server.js",
     "start": "node server.js"
   },
   "dependencies": {
