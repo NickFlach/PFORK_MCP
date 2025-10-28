@@ -1,3 +1,12 @@
+/**
+ * xmcp Server Configuration
+ * 
+ * This file configures the xmcp MCP server settings.
+ * The server runs on port 3000 and is proxied by Express on port 5000.
+ * 
+ * Learn more: https://xmcp.dev/docs/configuration
+ */
+
 import { type XmcpConfig } from "xmcp";
 
 const config: XmcpConfig = {
@@ -5,21 +14,6 @@ const config: XmcpConfig = {
     port: 3000,
     host: "0.0.0.0",
     endpoint: "/mcp",
-    bodySizeLimit: 10485760, // 10MB
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-      allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-        "mcp-session-id",
-        "mcp-protocol-version",
-      ],
-      exposedHeaders: ["Content-Type", "Authorization", "mcp-session-id"],
-      credentials: false,
-      maxAge: 86400,
-    },
-    debug: false, // adds extra logging to the console
   },
   paths: {
     tools: "./src/tools",

@@ -21,8 +21,10 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 - Unauthorized requests receive a 401 error
 
 ### Available Tools
-1. **greet** - Greet a user by name
-2. **homepage** - Display server homepage with information (MCP UI resource)
+1. **greet** - Simple example tool that greets a user by name
+2. **get-server-info** - Returns comprehensive server information and capabilities
+
+All tools include inline documentation with links to xmcp documentation.
 
 ### Server Architecture
 - **Express Server (Port 5000)**: Serves custom homepage and proxies MCP requests
@@ -31,6 +33,22 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 - **Protocol**: HTTP transport
 
 ## Recent Changes
+
+### 2025-10-28: Simplified Project Structure
+- Removed unused middleware.ts file (now using Express for auth/routing)
+- Removed @mcp-ui/server dependency (not needed)
+- Simplified xmcp.config.ts to minimal necessary configuration
+- Cleaned up project to be a clean boilerplate template
+- Updated documentation to reflect simplified structure
+
+### 2025-10-28: Enhanced Examples & Documentation for LLM Agents
+- Updated all tools, prompts, and resources with comprehensive inline documentation
+- Added documentation links to xmcp.dev in all component files
+- Created better example tools: greet, get-server-info
+- Created better example prompts: review-code (enhanced), generate-docs, debug-error
+- Created better example resources: app-config, user-profile, project-structure
+- Fixed alignment and spacing issues on homepage (section headers with docs links)
+- All components now include clear instructions for LLM coding agents
 
 ### 2025-10-28: Enhanced Homepage with Prompts & Resources
 - Added prompts and resources listings to homepage
@@ -67,23 +85,30 @@ This is a Model Context Protocol (MCP) server built with the xmcp TypeScript fra
 │   ├── index.html        # Homepage HTML
 │   └── styles.css        # Homepage CSS
 ├── src/
-│   ├── middleware.ts      # API key authentication for MCP
 │   ├── tools/
-│   │   ├── greet.ts      # Example greeting tool
-│   │   └── homepage.ts   # UI homepage tool (MCP UI)
+│   │   ├── greet.ts              # Example greeting tool
+│   │   └── get-server-info.ts   # Server information tool
 │   ├── prompts/
-│   │   └── review-code.ts # Code review prompt
+│   │   ├── review-code.ts        # Enhanced code review prompt
+│   │   ├── generate-docs.ts      # Documentation generation prompt
+│   │   └── debug-error.ts        # Error debugging prompt
 │   └── resources/
-│       └── (config)/
-│           └── app.ts    # App config resource
+│       ├── (config)/
+│       │   └── app.ts            # App config resource
+│       ├── (users)/
+│       │   └── [userId]/
+│       │       └── index.ts      # User profile resource
+│       └── (docs)/
+│           └── structure.ts      # Project structure resource
 ├── xmcp.config.ts        # xmcp server configuration (port 3000)
 └── package.json          # Dependencies and scripts
 ```
 
 ### Configuration Files
 - `server.js` - Express server serving homepage and proxying MCP requests
-- `public/index.html` - Static homepage HTML with embedded styles and scripts
-- `xmcp.config.ts` - xmcp server configuration (port 3000, paths)
+- `public/index.html` - Static homepage HTML
+- `public/styles.css` - Separated CSS for easy customization
+- `xmcp.config.ts` - xmcp server configuration (simplified, minimal settings)
 - `package.json` - Dependencies and scripts
 - `tsconfig.json` - TypeScript configuration
 

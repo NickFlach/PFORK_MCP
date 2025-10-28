@@ -36,19 +36,23 @@ h2 {
     text-transform: uppercase; 
     letter-spacing: 0.15em; 
     color: #888;
-    margin: 48px 0 16px 0;
+    margin: 0;
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    margin: 48px 0 16px 0;
 }
 
 .section-header a {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: #999;
     border-bottom: 1px solid transparent;
+    text-transform: none;
+    letter-spacing: normal;
+    margin-top: 2px;
 }
 
 .section-header a:hover {
