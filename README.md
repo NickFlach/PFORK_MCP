@@ -6,9 +6,31 @@ This project is a Model Context Protocol (MCP) server built with [xmcp](https://
 
 - ✅ **Beautiful Homepage** - Clean, minimalist landing page at the root URL
 - ✅ **API Key Authentication** - Secure your MCP server with SESSION_SECRET
+- ✅ **Express Integration** - Full control over routing and middleware
 - ✅ **HTTP Transport** - Accessible over HTTP on port 5000
 - ✅ **MCP UI Integration** - Build interactive interfaces with MCP UI
 - ✅ **Auto-discovery** - Tools, prompts, and resources automatically registered
+
+## Architecture
+
+This project uses a clean architecture with Express as the main server:
+
+```
+┌─────────────────────────────────────┐
+│   Express Server (Port 5000)        │
+│   - Serves homepage at /            │
+│   - Proxies /mcp to xmcp server     │
+│   - Full routing control            │
+└──────────────┬──────────────────────┘
+               │ proxies /mcp
+               ▼
+┌─────────────────────────────────────┐
+│   xmcp Server (Port 3000)           │
+│   - Handles MCP protocol            │
+│   - API key authentication          │
+│   - Auto-discovers tools            │
+└─────────────────────────────────────┘
+```
 
 ## Getting Started
 
@@ -65,18 +87,20 @@ Add this configuration to your MCP client (Claude Desktop, etc.):
 ## Project Structure
 
 ```
-├── server.js              # Express wrapper serving custom homepage
+├── server.js              # Express server (port 5000)
+├── public/
+│   └── index.html        # Homepage (served at /)
 ├── src/
-│   ├── middleware.ts      # API key authentication middleware
+│   ├── middleware.ts      # API key authentication
 │   ├── tools/
 │   │   ├── greet.ts      # Example greeting tool
 │   │   └── homepage.ts   # UI homepage tool (MCP UI)
 │   ├── prompts/
-│   │   └── review-code.ts # Code review prompt template
+│   │   └── review-code.ts # Code review prompt
 │   └── resources/
 │       └── (config)/
 │           └── app.ts    # Application configuration
-├── xmcp.config.ts        # xmcp configuration
+├── xmcp.config.ts        # xmcp configuration (port 3000)
 └── package.json
 ```
 
@@ -91,14 +115,12 @@ Greet a user by name.
 ### homepage
 Display the MCP server homepage with endpoint information and available tools. Returns a beautiful, minimalist UI using MCP UI.
 
-## How It Works
+## Customizing the Homepage
 
-The project uses a two-tier architecture:
-
-1. **Express Server (Port 5000)** - Serves the custom homepage at `/` and proxies MCP requests
-2. **xmcp Server (Port 3001)** - Handles MCP protocol requests with authentication
-
-When you visit the root URL, you see the beautiful minimalist homepage. All requests to `/mcp` are proxied to the xmcp server, which handles the MCP protocol with API key authentication.
+The homepage is located at `public/index.html`. Edit this file to customize the design. The JavaScript automatically:
+- Detects the current domain
+- Generates the MCP endpoint URL
+- Updates the configuration example
 
 ## Adding New Components
 
@@ -124,47 +146,37 @@ export default function myTool({ input }: InferSchema<typeof schema>) {
 }
 ```
 
-### Adding a Prompt
-
-Create a new file in `src/prompts/`:
-
-```typescript
-import { z } from "zod";
-import { type InferSchema, type PromptMetadata } from "xmcp";
-
-export const schema = {
-  topic: z.string().describe("The topic"),
-};
-
-export const metadata: PromptMetadata = {
-  name: "my-prompt",
-  title: "My Prompt",
-  description: "What your prompt does",
-  role: "user",
-};
-
-export default function myPrompt({ topic }: InferSchema<typeof schema>) {
-  return `Tell me about ${topic}`;
-}
-```
-
-## Building for Production
-
+Then rebuild:
 ```bash
 npm run build
+npm start
 ```
 
-This compiles TypeScript to the `dist/` directory.
+### Adding Custom Routes
+
+Edit `server.js` to add your own routes:
+
+```javascript
+// Add this before the /mcp proxy
+app.get('/your-route', (req, res) => {
+  res.json({ message: 'Your custom route' });
+});
+```
 
 ## Configuration
 
-### xmcp Configuration (`xmcp.config.ts`)
+### Express Server (`server.js`)
+- Port: 5000 (public-facing)
+- Serves homepage from `public/index.html`
+- Proxies `/mcp` to xmcp server on port 3000
 
+### xmcp Configuration (`xmcp.config.ts`)
 ```typescript
 const config: XmcpConfig = {
   http: {
-    port: 3001,        // Internal xmcp server port
-    host: "0.0.0.0",   // Bind to all interfaces
+    port: 3000,           // Internal xmcp server port
+    host: "0.0.0.0",
+    endpoint: "/mcp",
   },
   paths: {
     tools: "./src/tools",
@@ -174,12 +186,13 @@ const config: XmcpConfig = {
 };
 ```
 
-### Server Configuration (`server.js`)
+## Building for Production
 
-The Express server wrapper:
-- Serves custom homepage at `/`
-- Proxies MCP requests to xmcp server on port 3001
-- Runs on port 5000 for external access
+```bash
+npm run build
+```
+
+This compiles TypeScript to the `dist/` directory.
 
 ## Learn More
 
