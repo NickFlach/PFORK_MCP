@@ -20,20 +20,14 @@ expertMode = true
 
 [[ports]]
 localPort = 3000
-externalPort = 80
 
 [[ports]]
 localPort = 3001
-
-[[ports]]
-localPort = 3002
+externalPort = 3001
 
 [[ports]]
 localPort = 5000
-
-[[ports]]
-localPort = 46693
-externalPort = 3000
+externalPort = 80
 
 [workflows]
 runButton = "Project"
