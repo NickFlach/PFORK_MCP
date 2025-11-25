@@ -3,15 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCP on Replit</title>
+    <title>Pitchforks MCP Server</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="title-container">
-        <img src="/replit.png" alt="Replit" class="logo">
-        <h1>MCP on Replit</h1>
+        <div class="pitchfork-icon">🔱</div>
+        <h1>Pitchforks MCP</h1>
     </div>
-    <p class="subtitle">Model Context Protocol server built with xmcp</p>
+    <p class="subtitle">Model Context Protocol server for the Pitchforks ecosystem</p>
+    
+    <div class="ecosystem-grid">
+        <a href="https://protocol.pitchforks.social" target="_blank" class="ecosystem-card">
+            <div class="card-icon">📜</div>
+            <div class="card-title">Protocol</div>
+            <div class="card-desc">Governance & Whitepaper</div>
+        </a>
+        <a href="https://dex.pitchforks.social" target="_blank" class="ecosystem-card">
+            <div class="card-icon">💱</div>
+            <div class="card-title">DEX</div>
+            <div class="card-desc">Token Trading</div>
+        </a>
+        <a href="https://ferry.pitchforks.social" target="_blank" class="ecosystem-card">
+            <div class="card-icon">🌉</div>
+            <div class="card-title">Ferry</div>
+            <div class="card-desc">Cross-chain Bridge</div>
+        </a>
+        <a href="https://analyst.pitchforks.social" target="_blank" class="ecosystem-card">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Analyst</div>
+            <div class="card-desc">Analytics (Coming Soon)</div>
+        </a>
+        <a href="https://app.pitchforks.social" target="_blank" class="ecosystem-card">
+            <div class="card-icon">👥</div>
+            <div class="card-title">App</div>
+            <div class="card-desc">Social Network</div>
+        </a>
+    </div>
     
     <h2>Development Endpoint</h2>
     <div class="endpoint-container">
@@ -27,7 +55,7 @@
     
     <div class="section-header">
         <h2>Available Tools</h2>
-        <a href="https://xmcp.dev/docs/core-concepts/tools" target="_blank">docs →</a>
+        <a href="https://xmcp.dev/docs/core-concepts/tools" target="_blank">docs</a>
     </div>
     <ul class="tool-list" id="tools-list">
         <li style="color: #999;">Loading tools...</li>
@@ -35,7 +63,7 @@
     
     <div class="section-header">
         <h2>Available Prompts</h2>
-        <a href="https://xmcp.dev/docs/core-concepts/prompts" target="_blank">docs →</a>
+        <a href="https://xmcp.dev/docs/core-concepts/prompts" target="_blank">docs</a>
     </div>
     <ul class="tool-list" id="prompts-list">
         <li style="color: #999;">Loading prompts...</li>
@@ -43,7 +71,7 @@
     
     <div class="section-header">
         <h2>Available Resources</h2>
-        <a href="https://xmcp.dev/docs/core-concepts/resources" target="_blank">docs →</a>
+        <a href="https://xmcp.dev/docs/core-concepts/resources" target="_blank">docs</a>
     </div>
     <ul class="tool-list" id="resources-list">
         <li style="color: #999;">Loading resources...</li>
@@ -60,20 +88,17 @@
     <div class="docs-links">
         <a href="https://xmcp.dev/docs" target="_blank">xmcp Docs</a>
         <a href="https://modelcontextprotocol.io/" target="_blank">MCP Spec</a>
-        <a href="https://docs.replit.com" target="_blank">Replit Docs</a>
+        <a href="https://pitchforks.social" target="_blank">Pitchforks</a>
     </div>
 
     <script>
-        // Get MCP URL from current location
         const mcpUrl = window.location.origin + '/mcp';
         
-        // Update endpoint displays
         document.getElementById('mcp-url').textContent = mcpUrl;
         
-        // Update configuration JSON
         const configJson = {
             "mcpServers": {
-                "my-replit-mcp-server": {
+                "pitchforks-mcp": {
                     "url": mcpUrl,
                     "headers": {
                         "x-api-key": "your-session-secret"
@@ -83,7 +108,6 @@
         };
         document.getElementById('config-json').textContent = JSON.stringify(configJson, null, 2);
         
-        // Load available tools dynamically
         async function loadTools() {
             try {
                 const response = await fetch('/api/tools');
@@ -109,7 +133,6 @@
             }
         }
         
-        // Load available prompts dynamically
         async function loadPrompts() {
             try {
                 const response = await fetch('/api/prompts');
@@ -135,7 +158,6 @@
             }
         }
         
-        // Load available resources dynamically
         async function loadResources() {
             try {
                 const response = await fetch('/api/resources');
@@ -161,7 +183,6 @@
             }
         }
         
-        // Load all data on page load
         loadTools();
         loadPrompts();
         loadResources();

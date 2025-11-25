@@ -1,19 +1,8 @@
-/**
- * Tool: Get Server Information
- * 
- * Returns information about this MCP server, including available tools,
- * prompts, and resources. Useful for LLMs to understand server capabilities.
- * 
- * This demonstrates a read-only tool that provides context without external dependencies.
- * 
- * Learn more: https://xmcp.dev/docs/core-concepts/tools
- */
-
 import { type ToolMetadata } from "xmcp";
 
 export const metadata: ToolMetadata = {
   name: "get-server-info",
-  description: "Get information about this MCP server's capabilities and structure",
+  description: "Get information about this Pitchforks MCP server's capabilities and structure",
   annotations: {
     title: "Server Information",
     readOnlyHint: true,
@@ -24,28 +13,34 @@ export const metadata: ToolMetadata = {
 
 export default async function getServerInfo() {
   return {
-    name: "xmcp MCP Server",
+    name: "Pitchforks MCP Server",
     framework: "xmcp",
-    version: "0.1.0",
-    description: "Model Context Protocol server built with the xmcp TypeScript framework",
+    version: "1.0.0",
+    description: "Model Context Protocol server for the Pitchforks ecosystem - decentralized tools for peaceful resistance",
+    ecosystem: {
+      protocol: "protocol.pitchforks.social - Governance & Whitepaper",
+      dex: "dex.pitchforks.social - Token Trading on Neo X",
+      ferry: "ferry.pitchforks.social - Cross-chain Bridge (ETH ⇋ Neo X)",
+      analyst: "analyst.pitchforks.social - Analytics (Coming Soon)",
+      app: "app.pitchforks.social - Social Network"
+    },
     capabilities: {
-      tools: "Functions that LLMs can call to perform actions",
-      prompts: "Reusable instruction templates for consistent interactions",
-      resources: "Read-only data sources providing context to AI models",
+      tools: "Functions for interacting with Pitchforks ecosystem sites",
+      prompts: "Reusable templates for common Pitchforks workflows",
+      resources: "Real-time data feeds from ecosystem sites"
     },
     structure: {
-      tools: "src/tools/ - Auto-discovered tool definitions",
-      prompts: "src/prompts/ - Auto-discovered prompt templates",
-      resources: "src/resources/ - Auto-discovered resource providers",
-      middleware: "src/middleware.ts - Authentication and request processing",
-      config: "xmcp.config.ts - Server configuration",
+      tools: "src/tools/ - Ecosystem interaction tools",
+      prompts: "src/prompts/ - Workflow templates",
+      resources: "src/resources/ - Data feeds",
+      config: "xmcp.config.ts - Server configuration"
     },
     documentation: {
+      pitchforks: "https://pitchforks.social",
       xmcp: "https://xmcp.dev/docs",
-      mcp: "https://modelcontextprotocol.io/",
-      tools: "https://xmcp.dev/docs/core-concepts/tools",
-      prompts: "https://xmcp.dev/docs/core-concepts/prompts",
-      resources: "https://xmcp.dev/docs/core-concepts/resources",
+      mcp: "https://modelcontextprotocol.io/"
     },
+    status: "placeholder_mode",
+    note: "Tools currently return placeholder data. Connect ecosystem APIs for live functionality."
   };
 }

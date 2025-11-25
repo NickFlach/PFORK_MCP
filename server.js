@@ -111,10 +111,12 @@ setTimeout(() => {
       const mcpResponse = await queryMCP('resources/list');
       
       if (mcpResponse.error) {
-        throw new Error(mcpResponse.error.message);
+        // Resources might not be available, return empty array
+        console.log('Resources not available:', mcpResponse.error.message);
+        return res.json([]);
       }
       
-      const resources = mcpResponse.result.resources.map(resource => ({
+      const resources = (mcpResponse.result?.resources || []).map(resource => ({
         name: resource.name,
         description: resource.description || ''
       }));
@@ -122,7 +124,8 @@ setTimeout(() => {
       res.json(resources);
     } catch (error) {
       console.error('Error loading resources:', error);
-      res.status(500).json({ error: 'Failed to load resources' });
+      // Return empty array instead of error to prevent frontend issues
+      res.json([]);
     }
   });
 

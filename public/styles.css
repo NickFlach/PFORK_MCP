@@ -6,12 +6,12 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 80px 24px;
-    background: #ffffff;
+    padding: 60px 24px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     min-height: 100vh;
-    color: #1a1a1a;
+    color: #e0e0e0;
     line-height: 1.6;
 }
 
@@ -22,25 +22,67 @@ body {
     margin-bottom: 12px;
 }
 
-.logo {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
+.pitchfork-icon {
+    font-size: 48px;
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.5));
 }
 
 h1 { 
     margin: 0; 
     font-size: 2.5em; 
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    color: #000;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .subtitle {
     font-size: 1.1em;
-    color: #666;
-    margin-bottom: 48px;
+    color: #888;
+    margin-bottom: 32px;
     font-weight: 400;
+}
+
+.ecosystem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 48px;
+}
+
+.ecosystem-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ecosystem-card:hover {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: rgba(255, 193, 7, 0.5);
+    transform: translateY(-2px);
+}
+
+.card-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #ffc107;
+    font-size: 0.95em;
+    margin-bottom: 4px;
+}
+
+.card-desc {
+    font-size: 0.75em;
+    color: #888;
 }
 
 h2 { 
@@ -48,7 +90,7 @@ h2 {
     font-weight: 600; 
     text-transform: uppercase; 
     letter-spacing: 0.15em; 
-    color: #888;
+    color: #ffc107;
     margin: 0;
 }
 
@@ -61,7 +103,7 @@ h2 {
 
 .section-header a {
     font-size: 0.85em;
-    color: #999;
+    color: #666;
     border-bottom: 1px solid transparent;
     text-transform: none;
     letter-spacing: normal;
@@ -69,13 +111,13 @@ h2 {
 }
 
 .section-header a:hover {
-    color: #666;
-    border-bottom-color: #666;
+    color: #ffc107;
+    border-bottom-color: #ffc107;
 }
 
 p { 
     margin: 12px 0; 
-    color: #555; 
+    color: #aaa; 
     line-height: 1.7;
 }
 
@@ -85,15 +127,15 @@ p {
 }
 
 .endpoint {
-    background: #f8f8f8;
+    background: rgba(0, 0, 0, 0.4);
     padding: 14px 16px;
     padding-right: 90px;
     border-radius: 8px;
     font-family: 'SF Mono', Monaco, 'Courier New', monospace;
     font-size: 0.9em;
-    color: #1a1a1a;
+    color: #e0e0e0;
     word-break: break-all;
-    border: 1px solid #e8e8e8;
+    border: 1px solid rgba(255, 193, 7, 0.3);
     overflow-wrap: break-word;
     white-space: pre-wrap;
 }
@@ -111,19 +153,20 @@ p {
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    background: #000;
-    color: white;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #000;
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
     font-size: 0.85em;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.2s ease;
 }
 
 .copy-btn:hover {
-    background: #333;
+    filter: brightness(1.1);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
 }
 
 .copy-btn:active {
@@ -131,7 +174,7 @@ p {
 }
 
 .copy-btn.copied {
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .config-json + .copy-btn {
@@ -144,14 +187,15 @@ p {
 }
 
 a { 
-    color: #000; 
+    color: #ffc107; 
     text-decoration: none; 
-    border-bottom: 1px solid #ddd;
-    transition: border-color 0.2s ease;
+    border-bottom: 1px solid rgba(255, 193, 7, 0.3);
+    transition: all 0.2s ease;
 }
 
 a:hover { 
-    border-bottom-color: #000;
+    border-bottom-color: #ffc107;
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
 }
 
 .tool-list {
@@ -161,7 +205,7 @@ a:hover {
 
 .tool-list li {
     padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tool-list li:last-child {
@@ -170,20 +214,20 @@ a:hover {
 
 .tool-name {
     font-weight: 600;
-    color: #000;
+    color: #ffc107;
     font-family: 'SF Mono', Monaco, 'Courier New', monospace;
     font-size: 0.9em;
 }
 
 .tool-desc {
-    color: #666;
+    color: #888;
     font-size: 0.95em;
     margin-top: 4px;
 }
 
 .info-box {
-    background: #f8f9fa;
-    border-left: 3px solid #000;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #ffc107;
     padding: 16px;
     margin: 24px 0;
     border-radius: 4px;
@@ -191,12 +235,12 @@ a:hover {
 }
 
 .info-box strong {
-    color: #000;
+    color: #ffc107;
 }
 
 .auth-note {
-    background: #fef3c7;
-    border-left: 3px solid #f59e0b;
+    background: rgba(255, 152, 0, 0.1);
+    border-left: 3px solid #ff9800;
 }
 
 .docs-links {
@@ -207,8 +251,12 @@ a:hover {
 }
 
 .docs-links a {
-    color: #666;
+    color: #888;
     font-size: 0.95em;
+}
+
+.docs-links a:hover {
+    color: #ffc107;
 }
 
 @media (max-width: 600px) {
@@ -220,13 +268,16 @@ a:hover {
         gap: 12px;
     }
     
-    .logo {
-        width: 40px;
-        height: 40px;
+    .pitchfork-icon {
+        font-size: 40px;
     }
     
     h1 {
         font-size: 2em;
+    }
+    
+    .ecosystem-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .endpoint {
