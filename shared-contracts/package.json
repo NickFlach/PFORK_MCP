@@ -1,0 +1,32 @@
+{
+  "name": "@pitchforks/shared-contracts",
+  "version": "1.0.0",
+  "description": "Shared smart contracts for the Pitchforks ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:neo-x": "hardhat run scripts/deploy-neo-x.js --network neo-x",
+    "deploy:localhost": "hardhat run scripts/deploy-localhost.js --network localhost",
+    "verify:neo-x": "hardhat verify --network neo-x",
+    "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.0",
+    "ethers": "^6.7.0"
+  },
+  "keywords": [
+    "pitchforks",
+    "web3",
+    "blockchain",
+    "governance",
+    "treasury",
+    "neo-x"
+  ],
+  "author": "Pitchforks Team",
+  "license": "MIT"
+}
