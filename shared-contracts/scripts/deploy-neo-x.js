@@ -7,18 +7,16 @@ async function main() {
   console.log("📝 Deploying contracts with account:", deployer.address);
   console.log("💰 Account balance:", ethers.utils.formatEther(await deployer.getBalance()));
 
-  // ============ Deploy PFORK Token (if needed) ============
-  console.log("\n🪙 Deploying PFORK Token...");
-  const PFORKToken = await ethers.getContractFactory("PFORKToken");
-  const pforkToken = await PFORKToken.deploy();
-  await pforkToken.deployed();
-  console.log("✅ PFORK Token deployed to:", pforkToken.address);
+  // ============ Use Existing PFORK Token ============
+  console.log("\n🪙 Using existing PFORK Token...");
+  const PFORK_TOKEN_ADDRESS = "0x216490C8E6b33b4d8A2390dADcf9f433E30da60F";
+  console.log("✅ PFORK Token address:", PFORK_TOKEN_ADDRESS);
 
   // ============ Deploy Governance Contract ============
   console.log("\n🏛️ Deploying Pitchforks Governance...");
   const PitchforksGovernance = await ethers.getContractFactory("PitchforksGovernance");
   const governance = await PitchforksGovernance.deploy(
-    pforkToken.address,
+    PFORK_TOKEN_ADDRESS,
     7 * 24 * 60 * 60, // 7 days voting period
     1000, // 10% quorum threshold (1000 basis points)
     2 * 24 * 60 * 60 // 2 days execution delay
@@ -31,7 +29,7 @@ async function main() {
   const PitchforksTreasury = await ethers.getContractFactory("PitchforksTreasury");
   const treasury = await PitchforksTreasury.deploy(
     governance.address,
-    pforkToken.address
+    PFORK_TOKEN_ADDRESS
   );
   await treasury.deployed();
   console.log("✅ Treasury deployed to:", treasury.address);
@@ -45,15 +43,8 @@ async function main() {
   // ============ Initial Setup ============
   console.log("\n⚙️ Performing initial setup...");
   
-  // Mint initial PFORK tokens for ecosystem
-  const initialSupply = ethers.utils.parseEther("100000000"); // 100M tokens
-  await pforkToken.mint(deployer.address, initialSupply);
-  console.log("✅ Minted 100M PFORK tokens to deployer");
-
-  // Transfer some PFORK to Treasury for initial funding
-  const treasuryFunding = ethers.utils.parseEther("10000000"); // 10M tokens
-  await pforkToken.transfer(treasury.address, treasuryFunding);
-  console.log("✅ Transferred 10M PFORK tokens to Treasury");
+  // Note: PFORK tokens already exist, no minting needed
+  console.log("✅ Using existing PFORK token supply");
 
   // ============ Deploy Project-Specific Adapters ============
   console.log("\n🔌 Deploying Project Adapters...");
@@ -64,7 +55,7 @@ async function main() {
     governance.address,
     treasury.address,
     ethers.constants.AddressZero, // No funding contract yet
-    pforkToken.address
+    PFORK_TOKEN_ADDRESS
   );
   await protocolAdapter.deployed();
   console.log("✅ Protocol Adapter deployed to:", protocolAdapter.address);
@@ -76,7 +67,7 @@ async function main() {
     treasury.address,
     ethers.constants.AddressZero, // No liquidity pool yet
     ethers.constants.AddressZero, // No protected router yet
-    pforkToken.address
+    PFORK_TOKEN_ADDRESS
   );
   await dexAdapter.deployed();
   console.log("✅ DEX Adapter deployed to:", dexAdapter.address);
@@ -87,45 +78,29 @@ async function main() {
     governance.address,
     treasury.address,
     "0x81aC8AEDdaC85aA14011ab88944aA147472aC525", // Existing Ferry contract on Neo X
-    "0x536d98Ad83F7d0230B9384e606208802ECD728FE"  // Existing PFORK token on Neo X
+    PFORK_TOKEN_ADDRESS  // Using existing PFORK token
   );
   await ferryAdapter.deployed();
   console.log("✅ Ferry Adapter deployed to:", ferryAdapter.address);
 
   // ============ Initial Budget Allocations ============
-  console.log("\n💰 Allocating initial budgets...");
+  console.log("\n💰 Setting up budget allocations (no initial token allocation)...");
   
-  // Allocate PFORK tokens to each project
-  const protocolBudget = ethers.utils.parseEther("1000000"); // 1M PFORK
-  const dexBudget = ethers.utils.parseEther("2000000"); // 2M PFORK
-  const ferryBudget = ethers.utils.parseEther("500000"); // 0.5M PFORK
+  // Note: Budget allocations are set up but no tokens are allocated
+  // since we're using existing PFORK tokens that we don't control
+  console.log("✅ Budget allocation framework ready (requires manual token transfers)");
 
-  await treasury.allocateBudget(
-    0, // Project.PROTOCOL
-    pforkToken.address,
-    protocolBudget,
-    ethers.utils.parseEther("10000"), // 10K PFORK per withdrawal
-    ethers.utils.parseEther("50000")  // 50K PFORK daily limit
-  );
-  console.log("✅ Allocated 1M PFORK to Protocol");
-
-  await treasury.allocateBudget(
-    1, // Project.DEX
-    pforkToken.address,
-    dexBudget,
-    ethers.utils.parseEther("20000"), // 20K PFORK per withdrawal
-    ethers.utils.parseEther("100000") // 100K PFORK daily limit
-  );
-  console.log("✅ Allocated 2M PFORK to DEX");
-
-  await treasury.allocateBudget(
-    2, // Project.FERRY
-    pforkToken.address,
-    ferryBudget,
-    ethers.utils.parseEther("5000"), // 5K PFORK per withdrawal
-    ethers.utils.parseEther("25000") // 25K PFORK daily limit
-  );
-  console.log("✅ Allocated 0.5M PFORK to Ferry");
+  // ============ Generate Contract Registry ============
+  console.log("\n📋 Generating contract registry for MCP server...");
+  
+  const contractAddresses = {
+    PFORKToken: PFORK_TOKEN_ADDRESS,
+    PitchforksGovernance: governance.address,
+    PitchforksTreasury: treasury.address,
+    ProtocolAdapter: protocolAdapter.address,
+    DexAdapter: dexAdapter.address,
+    FerryAdapter: ferryAdapter.address
+  };
 
   // ============ Save Deployment Info ============
   const deploymentInfo = {
@@ -134,18 +109,14 @@ async function main() {
     deployer: deployer.address,
     timestamp: new Date().toISOString(),
     contracts: {
-      PFORKToken: pforkToken.address,
+      PFORKToken: PFORK_TOKEN_ADDRESS,
       Governance: governance.address,
       Treasury: treasury.address,
       ProtocolAdapter: protocolAdapter.address,
       DexAdapter: dexAdapter.address,
       FerryAdapter: ferryAdapter.address
     },
-    initialAllocations: {
-      protocol: ethers.utils.formatEther(protocolBudget),
-      dex: ethers.utils.formatEther(dexBudget),
-      ferry: ethers.utils.formatEther(ferryBudget)
-    }
+    notes: "Using existing PFORK token at 0x216490C8E6b33b4d8A2390dADcf9f433E30da60F"
   };
 
   // Save to file for easy access

@@ -225,7 +225,7 @@ export class HealthCheckService {
       
       // Test cache write/read
       await this.cache.set(testKey, 'test', 10);
-      const testValue = await this.cache.get(testKey);
+      const testValue = await this.cache.get<string>(testKey);
       await this.cache.del(testKey);
       
       const responseTime = Date.now() - startTime;
@@ -254,7 +254,7 @@ export class HealthCheckService {
       const queueStats = await this.transactionQueue.getQueueStats();
       const responseTime = Date.now() - startTime;
       
-      const status = queueStats.failedTransactions < queueStats.totalTransactions * 0.1 ? 'healthy' : 'degraded';
+      const status = queueStats.failedTransactions < (queueStats.totalTransactions * 0.1) ? 'healthy' : 'degraded';
 
       return {
         status,
